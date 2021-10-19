@@ -1,0 +1,36 @@
+{
+    "region": "us-east-1",
+    "cluster_name": "",
+    "vpc_id": "",
+    "subnets": [],
+    "tags": {
+        "Environment": "prod"
+    },
+    "ami": "",
+    "servers": 3,
+    "block_device_mappings": {
+        "size": 50,
+        "type": "gp2"
+    },
+    "ssh_authorized_keys": [],
+    "rke2_version": "v1.21.5+rke2r2",
+    "controlplane_internal": false,
+    "nodepool_name": "",
+    "nodepool_vpc_id": "",
+    "nodepool_subnets": [],
+    "nodepool_ami": "",
+    "nodepool_tags": {
+        "Environment": "prod"
+    },
+    "nodepool_block_device_mappings": {
+        "size": 100,
+        "type": "gp2"
+    },
+    "nodepool_ssh_authorized_keys": [],
+    "nodepool_rke2_version": "v1.21.5+rke2r2",
+    "nodepool_asg": {
+        "min": 3,
+        "desired": 3,
+        "max": 3
+    }
+}
