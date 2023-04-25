@@ -34,10 +34,10 @@ variable "instance_type" {
   description = "Server pool instance type"
 }
 
-variable "ami" {
-  description = "Server pool ami"
-  type        = string
-}
+# variable "ami" {
+#   description = "Server pool ami"
+#   type        = string
+# }
 
 variable "iam_instance_profile" {
   description = "Server pool IAM Instance Profile, created if left blank (default behavior)"

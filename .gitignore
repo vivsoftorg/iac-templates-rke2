@@ -1,6 +1,8 @@
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+infra/backend.tf
+**/**.terraform.lock.hcl
 crash.log
 override.tf
 override.tf.json
@@ -8,4 +10,6 @@ override.tf.json
 *_override.tf.json
 .envrc
 **/.terragrunt-cache/*
-.terraform.lock*
+infra/environments/dev/.terraform.lock.hcl
+infra/environments/prod/.terraform.lock.hcl
+infra/environments/qa/.terraform.lock.hcl

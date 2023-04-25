@@ -7,7 +7,7 @@ module "rke2" {
   subnets                                       = var.subnets
   tags                                          = var.tags
   instance_type                                 = var.instance_type
-  ami                                           = var.ami
+  ami                                           = data.aws_ami.rhel8.id
   iam_instance_profile                          = var.iam_instance_profile
   iam_permissions_boundary                      = var.iam_permissions_boundary
   block_device_mappings                         = var.block_device_mappings
@@ -34,7 +34,7 @@ module "rke2_agents" {
   vpc_id                      = var.nodepool_vpc_id
   subnets                     = var.nodepool_subnets
   instance_type               = var.nodepool_instance_type
-  ami                         = var.nodepool_ami
+  ami                         = data.aws_ami.rhel8.id
   tags                        = var.nodepool_tags
   iam_instance_profile        = var.nodepool_iam_instance_profile
   iam_permissions_boundary    = var.nodepool_iam_permissions_boundary
