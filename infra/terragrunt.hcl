@@ -37,6 +37,7 @@ inputs = merge(
     aws_region   = local.aws_region
     stack_name   = local.stack_name
     cluster_name = "${local.stack_name}-${local.environment}"
+    nodepool_name = "${local.stack_name}-${local.environment}"
     nodepool_tags = {
       "Environment" : local.environment
     }
