@@ -25,6 +25,38 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "associate_public_ip_address" {
+  default = false
+  type    = bool
+}
+
+variable "pre_userdata" {
+  description = "Custom userdata to run immediately before rke2 node attempts to join cluster, after required rke2, dependencies are installed"
+  type        = string
+  default     = <<EOF
+# Disable Incompatible Services
+
+NM_CLOUD_SETUP_SERVICE_ENABLED=`systemctl status nm-cloud-setup.service | grep -i enabled`
+NM_CLOUD_SETUP_TIMER_ENABLED=`systemctl status nm-cloud-setup.timer | grep -i enabled`
+
+if [ "$NM_CLOUD_SETUP_SERVICE_ENABLED" ]
+then 
+  systemctl disable nm-cloud-setup.service
+fi
+
+if [ "$NM_CLOUD_SETUP_TIMER_ENABLED" ]
+then 
+  systemctl disable nm-cloud-setup.timer
+fi
+EOF
+}
+
+variable "post_userdata" {
+  description = "Custom userdata to run immediately after rke2 node attempts to join cluster"
+  type        = string
+  default     = ""
+}
+
 #
 # Server pool variables
 #
@@ -34,10 +66,6 @@ variable "instance_type" {
   description = "Server pool instance type"
 }
 
-# variable "ami" {
-#   description = "Server pool ami"
-#   type        = string
-# }
 
 variable "iam_instance_profile" {
   description = "Server pool IAM Instance Profile, created if left blank (default behavior)"
@@ -133,18 +161,6 @@ variable "download" {
   default     = true
 }
 
-variable "pre_userdata" {
-  description = "Custom userdata to run immediately before rke2 node attempts to join cluster, after required rke2, dependencies are installed"
-  type        = string
-  default     = ""
-}
-
-variable "post_userdata" {
-  description = "Custom userdata to run immediately after rke2 node attempts to join cluster"
-  type        = string
-  default     = ""
-}
-
 variable "enable_ccm" {
   description = "Toggle enabling the cluster as aws aware, this will ensure the appropriate IAM policies are present"
   type        = bool
@@ -156,32 +172,11 @@ variable "nodepool_name" {
   type        = string
 }
 
-variable "nodepool_vpc_id" {
-  description = "VPC ID to create resources in"
-  type        = string
-}
-
-variable "nodepool_subnets" {
-  description = "List of subnet IDs to create resources in"
-  type        = list(string)
-}
-
 variable "nodepool_instance_type" {
   description = "Node pool instance type"
   default     = "t3.medium"
 }
 
-variable "nodepool_ami" {
-  description = "Node pool ami"
-  type        = string
-  default     = ""
-}
-
-variable "nodepool_tags" {
-  description = "Map of additional tags to add to all resources created"
-  type        = map(string)
-  default     = {}
-}
 
 #
 # Nodepool Variables
@@ -214,25 +209,20 @@ variable "nodepool_block_device_mappings" {
   }
 }
 
-variable "nodepool_extra_block_device_mappings" {
-  description = "Used to specify additional block device mapping configurations"
-  type        = list(map(string))
-  default = [
-  ]
-}
-
 variable "nodepool_asg" {
   description = "Node pool AutoScalingGroup scaling definition"
   type = object({
-    min     = number
-    max     = number
-    desired = number
+    min                  = number
+    max                  = number
+    desired              = number
+    termination_policies = list(string)
   })
 
   default = {
     min     = 1
     max     = 10
     desired = 1
+    termination_policies = ["Default"]
   }
 }
 
@@ -242,31 +232,6 @@ variable "nodepool_spot" {
   default     = false
 }
 
-variable "nodepool_extra_security_group_ids" {
-  description = "List of additional security group IDs"
-  type        = list(string)
-  default     = []
-}
-
-#
-# RKE2 Variables
-#
-variable "nodepool_rke2_version" {
-  description = "Version to use for RKE2 server nodepool"
-  type        = string
-  default     = "v1.19.7+rke2r1"
-}
-
-variable "nodepool_rke2_config" {
-  description = "Node pool additional configuration passed as rke2 config file, see https://docs.rke2.io/install/install_options/agent_config for full list of options"
-  default     = ""
-}
-
-variable "nodepool_enable_ccm" {
-  description = "Toggle enabling the cluster as aws aware, this will ensure the appropriate IAM policies are present"
-  type        = bool
-  default     = false
-}
 
 variable "nodepool_enable_autoscaler" {
   description = "Toggle configure the nodepool for cluster autoscaler, this will ensure the appropriate IAM policies are present, you are still responsible for ensuring cluster autoscaler is installed"
@@ -274,20 +239,16 @@ variable "nodepool_enable_autoscaler" {
   default     = false
 }
 
-variable "nodepool_download" {
-  description = "Toggle best effort download of rke2 dependencies (rke2 and aws cli), if disabled, dependencies are assumed to exist in $PATH"
-  type        = bool
-  default     = true
+
+variable "wait_for_capacity_timeout" {
+  description = "How long Terraform should wait for ASG instances to be healthy before timing out."
+  type        = string
+  default     = "10m"
 }
 
-variable "nodepool_pre_userdata" {
-  description = "Custom userdata to run immediately before rke2 node attempts to join cluster, after required rke2, dependencies are installed"
-  type        = string
-  default     = ""
-}
 
-variable "nodepool_post_userdata" {
-  description = "Custom userdata to run immediately after rke2 node attempts to join cluster"
+variable "controlplane_access_logs_bucket" {
+  description = "Bucket name for logging requests to control plane load balancer"
   type        = string
-  default     = ""
+  default     = "disabled"
 }
