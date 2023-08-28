@@ -6,7 +6,7 @@ variable "cluster_name" {
 variable "unique_suffix" {
   description = "Enables/disables generation of a unique suffix to cluster name"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "vpc_id" {

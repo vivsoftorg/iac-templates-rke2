@@ -18,25 +18,22 @@ jobs:
       - name: Set env vars (default)
         run: |
           echo "tf_working_dir=infra/environments/prod" >> $GITHUB_ENV
-          echo REPOSITORY_NAME=${GITHUB_REPOSITORY#*\/} >> $GITHUB_ENV
+          echo REPOSITORY_NAME=$(echo $GITHUB_REPOSITORY | awk -F'/' '{print substr($2, 1, 8)}') >> $GITHUB_ENV
 
       - name: Set env vars (dev)
         if: endsWith(github.ref, '/dev')
         run: |
           echo "tf_working_dir=infra/environments/dev" >> $GITHUB_ENV
-          echo REPOSITORY_NAME=${GITHUB_REPOSITORY#*\/} >> $GITHUB_ENV
 
       - name: Set env vars (qa)
         if: endsWith(github.ref, '/qa')
         run: |
           echo "tf_working_dir=infra/environments/qa" >> $GITHUB_ENV
-          echo REPOSITORY_NAME=${GITHUB_REPOSITORY#*\/} >> $GITHUB_ENV
 
       - name: Set env vars (prod)
         if: endsWith(github.ref, '/main')
         run: |
           echo "tf_working_dir=infra/environments/prod" >> $GITHUB_ENV
-          echo REPOSITORY_NAME=${GITHUB_REPOSITORY#*\/} >> $GITHUB_ENV
 
       - name: "Terragrunt Format"
         uses: the-commons-project/terragrunt-github-actions@master
