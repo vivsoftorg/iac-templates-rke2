@@ -1,4 +1,7 @@
-# Generic outputs as examples
+output "vpc" {
+  value = module.vpc
+}
+
 output "rke2" {
   value = module.rke2
 }
@@ -9,6 +12,6 @@ resource "null_resource" "kubeconfig" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "aws s3 cp ${module.rke2.kubeconfig_path} rke2.yaml"
+    command     = "aws s3 cp ${module.rke2.kubeconfig_path} target/rke2.yaml"
   }
 }

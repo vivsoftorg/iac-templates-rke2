@@ -1,37 +1,7 @@
-variable "instance_types" {
-  description = "EKS managed node instance type"
-  type        = list(any)
-  default     = ["t3.large"]
-}
-
-variable "eks_node_groups_min_size" {
-  description = "EKS managed node "
-  type        = string
-  default     = 1
-}
-
-variable "eks_node_groups_max_size" {
-  description = "EKS managed node "
-  type        = string
-  default     = 1
-}
-
-variable "eks_node_groups_desired_size" {
-  description = "EKS managed node "
-  type        = string
-  default     = 1
-}
-
 variable "vpc_cidr" {
   description = "The IPv4 CIDR block for the VPC."
   type        = string
   default     = "10.0.0.0/16"
-}
-
-variable "create_kubeconfig" {
-  description = "Should we create a kubeconfig file"
-  type        = bool
-  default     = false
 }
 
 variable "create_registry1_mirror" {

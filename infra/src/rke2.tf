@@ -13,6 +13,12 @@ data "aws_ami" "rhel8" {
   }
 }
 
+resource "null_resource" "create_target_dir" {
+  provisioner "local-exec" {
+    command = "mkdir -p target"
+  }
+}
+
 # Private Key
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
@@ -20,7 +26,7 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "local_file" "pem" {
-  filename        = "${var.cluster_name}.pem"
+  filename        = "target/${var.cluster_name}.pem"
   content         = tls_private_key.ssh.private_key_pem
   file_permission = "0600"
 }
@@ -31,9 +37,9 @@ module "rke2" {
   // source                                        = "git::https://github.com/rancherfederal/rke2-aws-tf.git?ref=v2.5.0"
   cluster_name                                     = local.name
   unique_suffix                                    = var.unique_suffix
-  vpc_id                                           = var.vpc_id
-  lb_subnets                                       = var.lb_subnets
-  subnets                                          = var.subnets
+  vpc_id                                           = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
+  lb_subnets                                       = var.create_vpc ? module.vpc[0].public_subnets : var.lb_subnets
+  subnets                                          = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
   tags                                             = var.tags
   instance_type                                    = var.instance_type
   ami                                              = data.aws_ami.rhel8.image_id
@@ -77,8 +83,8 @@ module "rke2_agents" {
   source = "./modules/rke2-aws-tf/modules/agent-nodepool/"
   // source                      = "git::https://github.com/rancherfederal/rke2-aws-tf.git//modules/agent-nodepool?ref=v2.5.0"
   name                        = local.name
-  vpc_id                      = var.vpc_id
-  subnets                     = var.subnets
+  vpc_id                      = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
+  subnets                     = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
   instance_type               = var.instance_type
   ami                         = data.aws_ami.rhel8.image_id
   tags                        = var.tags

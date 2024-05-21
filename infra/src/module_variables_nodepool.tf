@@ -122,7 +122,7 @@ variable "metadata_options" {
 #
 variable "cluster_data" {
   description = "Required data relevant to joining an existing rke2 cluster, sourced from main rke2 module, do NOT modify"
-  default = null
+  default     = null
 
   type = object({
     name       = string
