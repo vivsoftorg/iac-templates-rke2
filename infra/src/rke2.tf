@@ -39,7 +39,7 @@ module "rke2" {
   unique_suffix                                    = var.unique_suffix
   vpc_id                                           = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   lb_subnets                                       = var.create_vpc ? module.vpc[0].public_subnets : var.lb_subnets
-  subnets                                          = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
+  subnets                                          = var.create_vpc ? module.vpc[0].public_subnets : var.subnets
   tags                                             = var.tags
   instance_type                                    = var.instance_type
   ami                                              = data.aws_ami.rhel8.image_id
