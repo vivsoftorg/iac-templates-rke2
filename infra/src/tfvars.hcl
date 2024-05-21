@@ -13,7 +13,7 @@ associate_public_ip_address = true
 controlplane_internal       = false
 servers                     = 1
 asg                         = { min = 1, max = 10, desired = 1, suspended_processes = [], termination_policies = ["Default"] }
-block_device_mappings       = { size : 50, type : "gp2" }
+block_device_mappings       = { size = 50, type = "gp2" }
 
 // if you want to setup a mirror for https://registry1.dso.mil container registry, set the following variables
 create_registry1_mirror        = false
