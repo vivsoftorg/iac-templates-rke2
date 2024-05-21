@@ -82,7 +82,7 @@ module "rke2" {
 module "rke2_agents" {
   source = "./modules/rke2-aws-tf/modules/agent-nodepool/"
   // source                      = "git::https://github.com/rancherfederal/rke2-aws-tf.git//modules/agent-nodepool?ref=v2.5.0"
-  name                        = local.name
+  name                        = "generic"
   vpc_id                      = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   subnets                     = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
   instance_type               = var.instance_type

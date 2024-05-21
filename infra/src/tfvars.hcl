@@ -1,4 +1,4 @@
-create_vpc         = false
+create_vpc         = true
 vpc_cidr           = "10.0.0.0/16"
 enable_nat_gateway = true
 single_nat_gateway = true
@@ -10,6 +10,7 @@ subnets = ["subnet-5817463e", "subnet-f191cdd0"]
 cluster_name                = "juned-rke2"
 instance_type               = "t3.large"
 associate_public_ip_address = true
+controlplane_internal       = false
 servers                     = 1
 asg                         = { min = 1, max = 10, desired = 1, suspended_processes = [], termination_policies = ["Default"] }
 block_device_mappings       = { size : 50, type : "gp2" }
