@@ -8,7 +8,6 @@ inputs = {
   vpc_id  = "vpc-39b8da44"
   subnets = ["subnet-5817463e", "subnet-f191cdd0"]
 
-  cluster_name                = "juned-rke2"
   instance_type               = "t3.large"
   associate_public_ip_address = true
   controlplane_internal       = false
