@@ -11,6 +11,7 @@ inputs = {
   cluster_name                = "juned-rke2"
   instance_type               = "t3.large"
   associate_public_ip_address = true
+  controlplane_internal       = false
   servers                     = 1
   asg                         = { min = 1, max = 10, desired = 1, suspended_processes = [], termination_policies = ["Default"] }
   block_device_mappings       = { size : 50, type : "gp2" }
