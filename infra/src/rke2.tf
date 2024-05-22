@@ -64,8 +64,8 @@ module "rke2" {
   download                                         = var.download
   pre_userdata                                     = local.pre_userdata
   post_userdata                                    = var.post_userdata
-  enable_autoscaler                                = true
-  enable_ccm                                       = true
+  enable_autoscaler                                = var.enable_ccm
+  enable_ccm                                       = var.enable_ccm
   ccm_external                                     = var.ccm_external
   wait_for_capacity_timeout                        = var.wait_for_capacity_timeout
   associate_public_ip_address                      = var.associate_public_ip_address
@@ -102,8 +102,8 @@ module "rke2_agents" {
   rke2_channel                = var.rke2_channel
   rke2_version                = var.rke2_version
   rke2_config                 = var.rke2_config
-  enable_ccm                  = true
-  enable_autoscaler           = true
+  enable_ccm                  = var.enable_ccm
+  enable_autoscaler           = var.enable_autoscaler
   download                    = var.download
   pre_userdata                = local.pre_userdata
   post_userdata               = var.post_userdata

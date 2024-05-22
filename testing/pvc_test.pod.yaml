@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pvc-test
+  name: pvc-test
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources: {}
+    imagePullPolicy: Always
+    volumeMounts:
+    - mountPath: "/var/www/html"
+      name: mypvc
+  volumes:
+  - name: mypvc
+    persistentVolumeClaim:
+      claimName: mypvc
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pvc-test
+  name: pvc-test
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources: {}
+    imagePullPolicy: Always
+    volumeMounts:
+    - mountPath: "/var/www/html"
+      name: mypvc
+  volumes:
+  - name: mypvc
+    persistentVolumeClaim:
+      claimName: mypvc
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pvc-test-service
+spec:
+  selector:
+    run: pvc-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
