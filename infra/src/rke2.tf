@@ -129,10 +129,9 @@ resource "aws_security_group_rule" "quickstart_ssh" {
 # Example method of fetching kubeconfig from state store, requires aws cli and bash locally
 resource "null_resource" "kubeconfig" {
   depends_on = [module.rke2]
-
-  # Use a trigger to make sure the local-exec provisioner is executed on each apply
   triggers = {
-    always_run = "${timestamp()}"
+    // always_run = "${timestamp()}"
+    kubeconfig_hash = "${filemd5("target/rke2.yaml")}"
   }
 
   provisioner "local-exec" {

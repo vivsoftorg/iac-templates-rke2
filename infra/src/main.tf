@@ -13,7 +13,7 @@ locals {
   username         = regex("user/([^/]+)$", data.aws_caller_identity.current.arn)
   tags             = merge(var.tags, { "Owner" = local.username[0] })
   mirror_config = {
-    mirror     = <<-EOT
+    mirror = <<-EOT
         #!/bin/sh
         mkdir -p /etc/rancher/rke2/
         echo """mirrors:
