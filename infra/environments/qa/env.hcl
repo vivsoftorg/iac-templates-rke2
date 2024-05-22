@@ -8,6 +8,7 @@ inputs = {
   vpc_id  = "vpc-39b8da44"
   subnets = ["subnet-5817463e", "subnet-f191cdd0"]
 
+  rke2_version                = "v1.28.9+rke2r1" // rke2 version to install , remove this to use the latest version
   instance_type               = "t3.large"
   associate_public_ip_address = true
   controlplane_internal       = false
