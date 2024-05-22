@@ -17,7 +17,7 @@ inputs = {
   block_device_mappings       = { size = 50, type = "gp2" }
 
   // if you want to setup a mirror for https://registry1.dso.mil container registry, set the following variables
-  create_registry1_mirror        = false
+  create_registry1_mirror        = true
   registry1_mirror_proxy_address = "http://44.210.192.97:5000"
 
 }

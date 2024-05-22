@@ -16,6 +16,7 @@ locals {
     mirror = <<-EOT
         #!/bin/sh
         mkdir -p /etc/rancher/rke2/
+        echo "Creating Mirror file at /etc/rancher/rke2/registries.yaml"
         echo """mirrors:
           registry1.dso.mil:
             endpoint:
