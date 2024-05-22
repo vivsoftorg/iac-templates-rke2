@@ -9,6 +9,7 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .envrc
+targrt/*
 **/.terragrunt-cache/*
 infra/environments/dev/.terraform.lock.hcl
 infra/environments/prod/.terraform.lock.hcl

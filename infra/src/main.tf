@@ -14,15 +14,16 @@ locals {
   tags             = merge(var.tags, { "Owner" = local.username[0] })
   mirror_config = {
     mirror     = <<-EOT
-        mkdir -p /etc/containerd/certs.d/registry1.dso.mil
-        echo -ne 'server = "https://registry1.dso.mil"\n[host."${var.registry1_mirror_proxy_address}"]\n  capabilities = ["pull", "resolve"]\n  skip_verify = true' > /etc/containerd/certs.d/registry1.dso.mil/hosts.toml
-      EOT
-    non_mirror = <<-EOT
-        echo "No mirror proxy address provided"
+        #!/bin/sh
+        mkdir -p /etc/rancher/rke2/
+        echo """mirrors:
+          registry1.dso.mil:
+            endpoint:
+              - ${var.registry1_mirror_proxy_address}""" > /etc/rancher/rke2/registries.yaml 
       EOT
   }
 
-  mirror_proxy_config = var.create_registry1_mirror ? local.mirror_config.mirror : local.mirror_config.non_mirror
+  pre_userdata = var.create_registry1_mirror ? local.mirror_config.mirror : ""
 
 }
 data "aws_iam_policy" "ebs_csi" {

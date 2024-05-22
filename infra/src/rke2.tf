@@ -62,10 +62,10 @@ module "rke2" {
   rke2_version                                     = var.rke2_version
   rke2_config                                      = var.rke2_config
   download                                         = var.download
-  pre_userdata                                     = var.pre_userdata
+  pre_userdata                                     = local.pre_userdata
   post_userdata                                    = var.post_userdata
-  enable_autoscaler                                = var.enable_autoscaler
-  enable_ccm                                       = var.enable_ccm
+  enable_autoscaler                                = true
+  enable_ccm                                       = true
   ccm_external                                     = var.ccm_external
   wait_for_capacity_timeout                        = var.wait_for_capacity_timeout
   associate_public_ip_address                      = var.associate_public_ip_address
@@ -102,10 +102,10 @@ module "rke2_agents" {
   rke2_channel                = var.rke2_channel
   rke2_version                = var.rke2_version
   rke2_config                 = var.rke2_config
-  enable_ccm                  = var.enable_ccm
-  enable_autoscaler           = var.enable_autoscaler
+  enable_ccm                  = true
+  enable_autoscaler           = true
   download                    = var.download
-  pre_userdata                = var.pre_userdata
+  pre_userdata                = local.pre_userdata
   post_userdata               = var.post_userdata
   wait_for_capacity_timeout   = var.wait_for_capacity_timeout
   ccm_external                = var.ccm_external
@@ -113,4 +113,30 @@ module "rke2_agents" {
   rke2_install_script_url     = var.rke2_install_script_url
   awscli_url                  = var.awscli_url
   unzip_rpm_url               = var.unzip_rpm_url
+}
+
+
+# For demonstration only, lock down ssh access in production
+resource "aws_security_group_rule" "quickstart_ssh" {
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = module.rke2.cluster_data.cluster_sg
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+# Example method of fetching kubeconfig from state store, requires aws cli and bash locally
+resource "null_resource" "kubeconfig" {
+  depends_on = [module.rke2]
+
+  # Use a trigger to make sure the local-exec provisioner is executed on each apply
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "aws s3 cp ${module.rke2.kubeconfig_path} target/rke2.yaml"
+  }
 }
