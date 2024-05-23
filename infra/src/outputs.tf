@@ -15,3 +15,12 @@ output "mirror_config" {
   description = "Registry one Mirror config"
   value       = var.create_registry1_mirror ? local.pre_userdata : null
 }
+
+output "bigbang_sops_config" {
+  value = <<SOPS
+  ---
+creation_rules:
+  - kms: ${aws_kms_key.sops_key[0].arn}
+    encrypted_regex: "^(data|stringData)$"
+  SOPS
+}

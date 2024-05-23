@@ -1,3 +1,7 @@
+data "aws_iam_policy" "ebs_csi" {
+  name = "AmazonEBSCSIDriverPolicy"
+}
+
 data "aws_ami" "rhel8" {
   most_recent = true
   owners      = ["309956199498", "219670896067"] # "219670896067" Govloud RHEL8 , 309956199498 AWS RHEL8 Commercial
@@ -40,7 +44,7 @@ module "rke2" {
   vpc_id                                           = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   lb_subnets                                       = var.create_vpc ? module.vpc[0].public_subnets : var.lb_subnets
   subnets                                          = var.create_vpc ? module.vpc[0].public_subnets : var.subnets
-  tags                                             = var.tags
+  tags                                             = local.tags
   instance_type                                    = var.instance_type
   ami                                              = data.aws_ami.rhel8.image_id
   iam_instance_profile                             = var.iam_instance_profile
@@ -87,7 +91,7 @@ module "rke2_agents" {
   subnets                     = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
   instance_type               = var.instance_type
   ami                         = data.aws_ami.rhel8.image_id
-  tags                        = var.tags
+  tags                        = local.tags
   iam_instance_profile        = var.iam_instance_profile
   iam_permissions_boundary    = var.iam_permissions_boundary
   ssh_authorized_keys         = [tls_private_key.ssh.public_key_openssh]
@@ -138,4 +142,15 @@ resource "null_resource" "kubeconfig" {
     interpreter = ["bash", "-c"]
     command     = "aws s3 cp ${module.rke2.kubeconfig_path} target/rke2.yaml"
   }
+}
+
+
+resource "aws_iam_role_policy_attachment" "ebs" {
+  role       = module.rke2.iam_role
+  policy_arn = data.aws_iam_policy.ebs_csi.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_worker" {
+  role       = module.rke2_agents.iam_role
+  policy_arn = data.aws_iam_policy.ebs_csi.arn
 }

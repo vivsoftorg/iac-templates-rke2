@@ -12,6 +12,7 @@ locals {
   database_subnets = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 200)]
   username         = regex("user/([^/]+)$", data.aws_caller_identity.current.arn)
   tags             = merge(var.tags, { "Owner" = local.username[0] })
+  current_arn      = data.aws_caller_identity.current.arn
   mirror_config = {
     mirror = <<-EOT
         #!/bin/sh
@@ -26,7 +27,4 @@ locals {
 
   pre_userdata = var.create_registry1_mirror ? local.mirror_config.mirror : ""
 
-}
-data "aws_iam_policy" "ebs_csi" {
-  name = "AmazonEBSCSIDriverPolicy"
-}
+} 
