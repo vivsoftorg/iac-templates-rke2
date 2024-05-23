@@ -21,3 +21,9 @@ variable "enable_sops" {
   type        = bool
   default     = true
 }
+
+variable "target_path" {
+  description = "Path to the kubeconfig file"
+  type        = string
+  default     = "/tmp/target"
+}

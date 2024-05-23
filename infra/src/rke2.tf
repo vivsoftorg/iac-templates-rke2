@@ -19,7 +19,7 @@ data "aws_ami" "rhel8" {
 
 resource "null_resource" "create_target_dir" {
   provisioner "local-exec" {
-    command = "mkdir -p target"
+    command = "mkdir -p ${var.target_path}"
   }
 }
 
@@ -30,7 +30,7 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "local_file" "pem" {
-  filename        = "target/${var.cluster_name}.pem"
+  filename        = "${var.target_path}/${var.cluster_name}.pem"
   content         = tls_private_key.ssh.private_key_pem
   file_permission = "0600"
 }
@@ -134,13 +134,13 @@ resource "aws_security_group_rule" "quickstart_ssh" {
 resource "null_resource" "kubeconfig" {
   depends_on = [module.rke2]
   triggers = {
-    // always_run = "${timestamp()}"
-    kubeconfig_hash = "${filemd5("target/rke2.yaml")}"
+    always_run = "${timestamp()}"
+    // kubeconfig_hash = filemd5("${var.target_path}/${var.cluster_name}-rke2-kubeconfig.yaml")
   }
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "aws s3 cp ${module.rke2.kubeconfig_path} target/rke2.yaml"
+    command     = "aws s3 cp ${module.rke2.kubeconfig_path} ${var.target_path}/${var.cluster_name}-rke2-kubeconfig.yaml"
   }
 }
 
