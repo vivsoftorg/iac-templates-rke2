@@ -15,3 +15,9 @@ variable "registry1_mirror_proxy_address" {
   type        = string
   default     = "http://44.210.192.97:5000"
 }
+
+variable "enable_sops" {
+  description = "Should we enable SOPS for secrets management"
+  type        = bool
+  default     = true
+}
