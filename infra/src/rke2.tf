@@ -1,3 +1,7 @@
+data "aws_iam_policy" "ebs_csi" {
+  name = "AmazonEBSCSIDriverPolicy"
+}
+
 data "aws_ami" "rhel8" {
   most_recent = true
   owners      = ["309956199498", "219670896067"] # "219670896067" Govloud RHEL8 , 309956199498 AWS RHEL8 Commercial
@@ -13,20 +17,13 @@ data "aws_ami" "rhel8" {
   }
 }
 
-resource "null_resource" "create_target_dir" {
-  provisioner "local-exec" {
-    command = "mkdir -p target"
-  }
-}
-
-# Private Key
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "local_file" "pem" {
-  filename        = "target/${var.cluster_name}.pem"
+  filename        = "/tmp/${var.cluster_name}.pem"
   content         = tls_private_key.ssh.private_key_pem
   file_permission = "0600"
 }
@@ -40,7 +37,7 @@ module "rke2" {
   vpc_id                                           = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   lb_subnets                                       = var.create_vpc ? module.vpc[0].public_subnets : var.lb_subnets
   subnets                                          = var.create_vpc ? module.vpc[0].public_subnets : var.subnets
-  tags                                             = var.tags
+  tags                                             = local.tags
   instance_type                                    = var.instance_type
   ami                                              = data.aws_ami.rhel8.image_id
   iam_instance_profile                             = var.iam_instance_profile
@@ -62,9 +59,9 @@ module "rke2" {
   rke2_version                                     = var.rke2_version
   rke2_config                                      = var.rke2_config
   download                                         = var.download
-  pre_userdata                                     = var.pre_userdata
+  pre_userdata                                     = local.pre_userdata
   post_userdata                                    = var.post_userdata
-  enable_autoscaler                                = var.enable_autoscaler
+  enable_autoscaler                                = var.enable_ccm
   enable_ccm                                       = var.enable_ccm
   ccm_external                                     = var.ccm_external
   wait_for_capacity_timeout                        = var.wait_for_capacity_timeout
@@ -87,7 +84,7 @@ module "rke2_agents" {
   subnets                     = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
   instance_type               = var.instance_type
   ami                         = data.aws_ami.rhel8.image_id
-  tags                        = var.tags
+  tags                        = local.tags
   iam_instance_profile        = var.iam_instance_profile
   iam_permissions_boundary    = var.iam_permissions_boundary
   ssh_authorized_keys         = [tls_private_key.ssh.public_key_openssh]
@@ -105,7 +102,7 @@ module "rke2_agents" {
   enable_ccm                  = var.enable_ccm
   enable_autoscaler           = var.enable_autoscaler
   download                    = var.download
-  pre_userdata                = var.pre_userdata
+  pre_userdata                = local.pre_userdata
   post_userdata               = var.post_userdata
   wait_for_capacity_timeout   = var.wait_for_capacity_timeout
   ccm_external                = var.ccm_external
@@ -113,4 +110,40 @@ module "rke2_agents" {
   rke2_install_script_url     = var.rke2_install_script_url
   awscli_url                  = var.awscli_url
   unzip_rpm_url               = var.unzip_rpm_url
+}
+
+
+# For demonstration only, lock down ssh access in production
+resource "aws_security_group_rule" "quickstart_ssh" {
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = module.rke2.cluster_data.cluster_sg
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+# Example method of fetching kubeconfig from state store, requires aws cli and bash locally
+resource "null_resource" "kubeconfig" {
+  depends_on = [module.rke2]
+  triggers = {
+    always_run = "${timestamp()}"
+    // kubeconfig_hash = filemd5("${/tmp/${var.cluster_name}-rke2-kubeconfig.yaml}")
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "aws s3 cp ${module.rke2.kubeconfig_path} /tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
+  }
+}
+
+
+resource "aws_iam_role_policy_attachment" "ebs" {
+  role       = module.rke2.iam_role
+  policy_arn = data.aws_iam_policy.ebs_csi.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_worker" {
+  role       = module.rke2_agents.iam_role
+  policy_arn = data.aws_iam_policy.ebs_csi.arn
 }

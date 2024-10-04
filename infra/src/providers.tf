@@ -5,3 +5,13 @@ provider "aws" {
     }
   }
 }
+
+provider "helm" {
+  kubernetes {
+    config_path = "/tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
+  }
+}
+
+provider "kubernetes" {
+  config_path = "/tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
+}

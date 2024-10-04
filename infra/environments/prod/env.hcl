@@ -8,6 +8,7 @@ inputs = {
   vpc_id  = "vpc-39b8da44"
   subnets = ["subnet-5817463e", "subnet-f191cdd0"]
 
+  rke2_version                = "v1.28.9+rke2r1" // rke2 version to install , remove this to use the latest version
   instance_type               = "t3.large"
   associate_public_ip_address = true
   controlplane_internal       = false
@@ -16,7 +17,7 @@ inputs = {
   block_device_mappings       = { size = 50, type = "gp2" }
 
   // if you want to setup a mirror for https://registry1.dso.mil container registry, set the following variables
-  create_registry1_mirror        = false
+  create_registry1_mirror        = true
   registry1_mirror_proxy_address = "http://44.210.192.97:5000"
 
 }
