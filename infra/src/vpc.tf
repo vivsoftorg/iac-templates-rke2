@@ -4,7 +4,7 @@ module "vpc" {
   name   = var.cluster_name
   source = "./modules/terraform-aws-vpc"
   // source  = "terraform-aws-modules/vpc/aws"
-  // version = "v5.7.1"
+  // version = "v5.16.0"
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
@@ -27,30 +27,32 @@ module "vpc" {
   secondary_cidr_blocks = var.secondary_cidr_blocks
   instance_tenancy      = var.instance_tenancy
   // azs                                  = var.azs
-  enable_dns_hostnames                 = var.enable_dns_hostnames
-  enable_dns_support                   = var.enable_dns_support
-  enable_network_address_usage_metrics = var.enable_network_address_usage_metrics
-  use_ipam_pool                        = var.use_ipam_pool
-  ipv4_ipam_pool_id                    = var.ipv4_ipam_pool_id
-  ipv4_netmask_length                  = var.ipv4_netmask_length
-  enable_ipv6                          = var.enable_ipv6
-  ipv6_cidr                            = var.ipv6_cidr
-  ipv6_ipam_pool_id                    = var.ipv6_ipam_pool_id
-  ipv6_netmask_length                  = var.ipv6_netmask_length
-  ipv6_cidr_block_network_border_group = var.ipv6_cidr_block_network_border_group
-  vpc_tags                             = var.vpc_tags
-  enable_dhcp_options                  = var.enable_dhcp_options
-  dhcp_options_domain_name             = var.dhcp_options_domain_name
-  dhcp_options_domain_name_servers     = var.dhcp_options_domain_name_servers
-  dhcp_options_ntp_servers             = var.dhcp_options_ntp_servers
-  dhcp_options_netbios_name_servers    = var.dhcp_options_netbios_name_servers
-  dhcp_options_netbios_node_type       = var.dhcp_options_netbios_node_type
-  dhcp_options_tags                    = var.dhcp_options_tags
+  enable_dns_hostnames                           = var.enable_dns_hostnames
+  enable_dns_support                             = var.enable_dns_support
+  enable_network_address_usage_metrics           = var.enable_network_address_usage_metrics
+  use_ipam_pool                                  = var.use_ipam_pool
+  ipv4_ipam_pool_id                              = var.ipv4_ipam_pool_id
+  ipv4_netmask_length                            = var.ipv4_netmask_length
+  enable_ipv6                                    = var.enable_ipv6
+  ipv6_cidr                                      = var.ipv6_cidr
+  ipv6_ipam_pool_id                              = var.ipv6_ipam_pool_id
+  ipv6_netmask_length                            = var.ipv6_netmask_length
+  ipv6_cidr_block_network_border_group           = var.ipv6_cidr_block_network_border_group
+  vpc_tags                                       = var.vpc_tags
+  enable_dhcp_options                            = var.enable_dhcp_options
+  dhcp_options_domain_name                       = var.dhcp_options_domain_name
+  dhcp_options_domain_name_servers               = var.dhcp_options_domain_name_servers
+  dhcp_options_ntp_servers                       = var.dhcp_options_ntp_servers
+  dhcp_options_netbios_name_servers              = var.dhcp_options_netbios_name_servers
+  dhcp_options_netbios_node_type                 = var.dhcp_options_netbios_node_type
+  dhcp_options_ipv6_address_preferred_lease_time = var.dhcp_options_ipv6_address_preferred_lease_time
+  dhcp_options_tags                              = var.dhcp_options_tags
   // public_subnets=var.public_subnets
   public_subnet_assign_ipv6_address_on_creation                = var.public_subnet_assign_ipv6_address_on_creation
   public_subnet_enable_dns64                                   = var.public_subnet_enable_dns64
   public_subnet_enable_resource_name_dns_aaaa_record_on_launch = var.public_subnet_enable_resource_name_dns_aaaa_record_on_launch
   public_subnet_enable_resource_name_dns_a_record_on_launch    = var.public_subnet_enable_resource_name_dns_a_record_on_launch
+  create_multiple_public_route_tables                          = var.create_multiple_public_route_tables
   public_subnet_ipv6_prefixes                                  = var.public_subnet_ipv6_prefixes
   public_subnet_ipv6_native                                    = var.public_subnet_ipv6_native
   map_public_ip_on_launch                                      = var.map_public_ip_on_launch
@@ -74,6 +76,7 @@ module "vpc" {
   private_subnet_private_dns_hostname_type_on_launch            = var.private_subnet_private_dns_hostname_type_on_launch
   private_subnet_names                                          = var.private_subnet_names
   private_subnet_suffix                                         = var.private_subnet_suffix
+  create_private_nat_gateway_route                              = var.create_private_nat_gateway_route
   // private_subnet_tags=var.private_subnet_tags
   private_subnet_tags_per_az    = var.private_subnet_tags_per_az
   private_route_table_tags      = var.private_route_table_tags
@@ -149,6 +152,7 @@ module "vpc" {
   intra_subnet_enable_dns64                                         = var.intra_subnet_enable_dns64
   intra_subnet_enable_resource_name_dns_aaaa_record_on_launch       = var.intra_subnet_enable_resource_name_dns_aaaa_record_on_launch
   intra_subnet_enable_resource_name_dns_a_record_on_launch          = var.intra_subnet_enable_resource_name_dns_a_record_on_launch
+  create_multiple_intra_route_tables                                = var.create_multiple_intra_route_tables
   intra_subnet_ipv6_prefixes                                        = var.intra_subnet_ipv6_prefixes
   intra_subnet_ipv6_native                                          = var.intra_subnet_ipv6_native
   intra_subnet_private_dns_hostname_type_on_launch                  = var.intra_subnet_private_dns_hostname_type_on_launch
@@ -222,7 +226,11 @@ module "vpc" {
   default_route_table_routes                                        = var.default_route_table_routes
   default_route_table_tags                                          = var.default_route_table_tags
   enable_flow_log                                                   = var.enable_flow_log
+  vpc_flow_log_iam_role_name                                        = var.vpc_flow_log_iam_role_name
+  vpc_flow_log_iam_role_use_name_prefix                             = var.vpc_flow_log_iam_role_use_name_prefix
   vpc_flow_log_permissions_boundary                                 = var.vpc_flow_log_permissions_boundary
+  vpc_flow_log_iam_policy_name                                      = var.vpc_flow_log_iam_policy_name
+  vpc_flow_log_iam_policy_use_name_prefix                           = var.vpc_flow_log_iam_policy_use_name_prefix
   flow_log_max_aggregation_interval                                 = var.flow_log_max_aggregation_interval
   flow_log_traffic_type                                             = var.flow_log_traffic_type
   flow_log_destination_type                                         = var.flow_log_destination_type
@@ -235,6 +243,7 @@ module "vpc" {
   vpc_flow_log_tags                                                 = var.vpc_flow_log_tags
   create_flow_log_cloudwatch_log_group                              = var.create_flow_log_cloudwatch_log_group
   create_flow_log_cloudwatch_iam_role                               = var.create_flow_log_cloudwatch_iam_role
+  flow_log_cloudwatch_iam_role_conditions                           = var.flow_log_cloudwatch_iam_role_conditions
   flow_log_cloudwatch_iam_role_arn                                  = var.flow_log_cloudwatch_iam_role_arn
   flow_log_cloudwatch_log_group_name_prefix                         = var.flow_log_cloudwatch_log_group_name_prefix
   flow_log_cloudwatch_log_group_name_suffix                         = var.flow_log_cloudwatch_log_group_name_suffix
@@ -242,8 +251,4 @@ module "vpc" {
   flow_log_cloudwatch_log_group_kms_key_id                          = var.flow_log_cloudwatch_log_group_kms_key_id
   flow_log_cloudwatch_log_group_skip_destroy                        = var.flow_log_cloudwatch_log_group_skip_destroy
   flow_log_cloudwatch_log_group_class                               = var.flow_log_cloudwatch_log_group_class
-
-
-
-
 }
