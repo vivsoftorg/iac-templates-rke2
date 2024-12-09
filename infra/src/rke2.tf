@@ -133,7 +133,7 @@ resource "null_resource" "kubeconfig" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "aws s3 cp ${module.rke2.kubeconfig_path} /tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
+    command     = "aws s3 cp ${module.rke2.kubeconfig_path} ./tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
   }
 }
 

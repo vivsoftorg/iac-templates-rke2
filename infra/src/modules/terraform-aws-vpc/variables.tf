@@ -156,6 +156,12 @@ variable "dhcp_options_netbios_node_type" {
   default     = ""
 }
 
+variable "dhcp_options_ipv6_address_preferred_lease_time" {
+  description = "How frequently, in seconds, a running instance with an IPv6 assigned to it goes through DHCPv6 lease renewal (requires enable_dhcp_options set to true)"
+  type        = number
+  default     = null
+}
+
 variable "dhcp_options_tags" {
   description = "Additional tags for the DHCP option set (requires enable_dhcp_options set to true)"
   type        = map(string)
@@ -192,6 +198,12 @@ variable "public_subnet_enable_resource_name_dns_aaaa_record_on_launch" {
 
 variable "public_subnet_enable_resource_name_dns_a_record_on_launch" {
   description = "Indicates whether to respond to DNS queries for instance hostnames with DNS A records. Default: `false`"
+  type        = bool
+  default     = false
+}
+
+variable "create_multiple_public_route_tables" {
+  description = "Indicates whether to create a separate route table for each public subnet. Default: `false`"
   type        = bool
   default     = false
 }
@@ -358,6 +370,12 @@ variable "private_subnet_suffix" {
   description = "Suffix to append to private subnets name"
   type        = string
   default     = "private"
+}
+
+variable "create_private_nat_gateway_route" {
+  description = "Controls if a nat gateway route should be created to give internet access to the private subnets"
+  type        = bool
+  default     = true
 }
 
 variable "private_subnet_tags" {
@@ -914,6 +932,12 @@ variable "intra_subnet_enable_resource_name_dns_a_record_on_launch" {
   default     = false
 }
 
+variable "create_multiple_intra_route_tables" {
+  description = "Indicates whether to create a separate route table for each intra subnet. Default: `false`"
+  type        = bool
+  default     = false
+}
+
 variable "intra_subnet_ipv6_prefixes" {
   description = "Assigns IPv6 intra subnet id based on the Amazon provided /56 prefix base 10 integer (0-256). Must be of equal length to the corresponding IPv4 subnet list"
   type        = list(string)
@@ -1466,10 +1490,35 @@ variable "enable_flow_log" {
   default     = false
 }
 
+variable "vpc_flow_log_iam_role_name" {
+  description = "Name to use on the VPC Flow Log IAM role created"
+  type        = string
+  default     = "vpc-flow-log-role"
+}
+
+variable "vpc_flow_log_iam_role_use_name_prefix" {
+  description = "Determines whether the IAM role name (`vpc_flow_log_iam_role_name_name`) is used as a prefix"
+  type        = bool
+  default     = true
+}
+
+
 variable "vpc_flow_log_permissions_boundary" {
   description = "The ARN of the Permissions Boundary for the VPC Flow Log IAM Role"
   type        = string
   default     = null
+}
+
+variable "vpc_flow_log_iam_policy_name" {
+  description = "Name of the IAM policy"
+  type        = string
+  default     = "vpc-flow-log-to-cloudwatch"
+}
+
+variable "vpc_flow_log_iam_policy_use_name_prefix" {
+  description = "Determines whether the name of the IAM policy (`vpc_flow_log_iam_policy_name`) is used as a prefix"
+  type        = bool
+  default     = true
 }
 
 variable "flow_log_max_aggregation_interval" {
@@ -1546,6 +1595,16 @@ variable "create_flow_log_cloudwatch_iam_role" {
   description = "Whether to create IAM role for VPC Flow Logs"
   type        = bool
   default     = false
+}
+
+variable "flow_log_cloudwatch_iam_role_conditions" {
+  description = "Additional conditions of the CloudWatch role assumption policy"
+  type = list(object({
+    test     = string
+    variable = string
+    values   = list(string)
+  }))
+  default = []
 }
 
 variable "flow_log_cloudwatch_iam_role_arn" {
