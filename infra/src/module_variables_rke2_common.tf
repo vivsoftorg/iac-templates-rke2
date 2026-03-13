@@ -7,11 +7,13 @@ variable "name" {
 variable "vpc_id" {
   description = "VPC ID to create resources in"
   type        = string
+  default     = null
 }
 
 variable "subnets" {
   description = "List of subnet IDs to create resources in"
   type        = list(string)
+  default     = null
 }
 
 variable "instance_type" {
