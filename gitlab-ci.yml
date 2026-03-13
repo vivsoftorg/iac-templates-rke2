@@ -5,7 +5,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*run-ci.*/i
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/infra/src/
-  TF_STATE_NAME: eks
+  TF_STATE_NAME: rke2
 cache:
   key: production
   paths:
