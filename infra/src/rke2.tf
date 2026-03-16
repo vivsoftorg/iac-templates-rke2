@@ -131,7 +131,7 @@ resource "null_resource" "kubeconfig" {
 
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command     = "aws s3 cp ${module.rke2.kubeconfig_path} ./tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
+    command     = "mkdir -p ./target ./tmp && aws s3 cp ${module.rke2.kubeconfig_path} ./target/kubeconfig.yaml && cp ./target/kubeconfig.yaml ./tmp/${var.cluster_name}-rke2-kubeconfig.yaml"
   }
 }
 
