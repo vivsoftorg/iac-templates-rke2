@@ -12,7 +12,7 @@ locals {
   cluster_name = "cloud-enabled"
 
   ssh_allowed_cidrs = [
-    "76.185.97.220/32"
+    "0.0.0.0/0"
   ]
 
   tags = {
