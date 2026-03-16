@@ -4,7 +4,7 @@ This is the ENBUILD RKE2 catalog to deploy Rancher Kubernetes Engine 2 deploys a
 
 ```
   // source  = "git::https://github.com/rancherfederal/rke2-aws-tf.git"
-  // version = "v2.5.0"
+  // version = "v2.5.1"
 
 ```
 

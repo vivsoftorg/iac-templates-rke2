@@ -1,4 +1,6 @@
 resource "helm_release" "ebs_csi_driver" {
+  count = var.enable_cluster_storage_addons ? 1 : 0
+
   depends_on = [
     null_resource.kubeconfig
   ]
@@ -13,6 +15,8 @@ resource "helm_release" "ebs_csi_driver" {
 }
 
 resource "kubernetes_storage_class_v1" "ebs_storageclass" {
+  count = var.enable_cluster_storage_addons ? 1 : 0
+
   depends_on = [
     helm_release.ebs_csi_driver,
     null_resource.kubeconfig

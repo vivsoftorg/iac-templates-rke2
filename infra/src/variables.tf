@@ -21,3 +21,9 @@ variable "enable_sops" {
   type        = bool
   default     = true
 }
+
+variable "enable_cluster_storage_addons" {
+  description = "Install in-cluster storage addons after kubeconfig is available."
+  type        = bool
+  default     = false
+}
