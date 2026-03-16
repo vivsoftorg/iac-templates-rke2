@@ -30,8 +30,7 @@ resource "local_file" "pem" {
 
 # Provision rke2 server(s) and controlplane loadbalancer
 module "rke2" {
-  source = "./modules/rke2-aws-tf/"
-  // source                                        = "git::https://github.com/rancherfederal/rke2-aws-tf.git?ref=v2.5.1"
+  source                                           = "git::https://github.com/rancherfederal/rke2-aws-tf.git?ref=v2.5.1"
   cluster_name                                     = local.name
   unique_suffix                                    = var.unique_suffix
   vpc_id                                           = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
@@ -77,8 +76,7 @@ module "rke2" {
 
 # Provision Auto Scaling Group of agents to auto-join cluster
 module "rke2_agents" {
-  source = "./modules/rke2-aws-tf/modules/agent-nodepool/"
-  // source                      = "git::https://github.com/rancherfederal/rke2-aws-tf.git//modules/agent-nodepool?ref=v2.5.1"
+  source                      = "git::https://github.com/rancherfederal/rke2-aws-tf.git//modules/agent-nodepool?ref=v2.5.1"
   name                        = "generic"
   vpc_id                      = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   subnets                     = var.create_vpc ? module.vpc[0].private_subnets : var.subnets
