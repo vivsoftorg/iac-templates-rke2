@@ -1,4 +1,4 @@
-image: 
+image:
   name: registry.gitlab.com/enbuild-staging/hardened-gitlab-runner:v3
 workflow:
   rules:
@@ -12,7 +12,7 @@ cache:
     - ${TF_ROOT}/.terraform
 before_script:
   - cd ${TF_ROOT}
-  - export TF_VAR_cluster_name="${CI_PROJECT_NAME}"
+  - export TF_VAR_cluster_name="${CI_PROJECT_NAME//_/-}"
 stages:
   - init
   - validate
